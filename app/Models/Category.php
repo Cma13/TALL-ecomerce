@@ -18,7 +18,7 @@ class Category extends Model
 
     public function brands()
     {
-        return $this->belongsToMany(Brands::class);
+        return $this->belongsToMany(Brand::class);
     }
 
     public function products()
@@ -26,3 +26,5 @@ class Category extends Model
         return $this->hasManyThrough(Products::class, Subcategory::class);
     }
 }
+
+//012 Insertar registros en tabla colors
