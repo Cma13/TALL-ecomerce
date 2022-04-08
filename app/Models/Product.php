@@ -15,22 +15,22 @@ class Product extends Model
 
     public function brands()
     {
-        return $this->belongsTo(Brands::class);
+        return $this->belongsTo(Brand::class);
     }
 
-    public function subcategories()
+    public function subcategory()
     {
         return $this->belongsTo(Subcategory::class);
     }
 
     public function colors()
     {
-        return $this->belongsToMany(Colors::class);
+        return $this->belongsToMany(Color::class);
     }
 
     public function sizes()
     {
-        return $this->hasMany(Sizes::class);
+        return $this->hasMany(Size::class);
     }
 
     public function images()
