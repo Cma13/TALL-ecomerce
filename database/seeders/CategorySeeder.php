@@ -31,9 +31,9 @@ class CategorySeeder extends Seeder
             ],
 
             [
-                'name' => 'Consola y videojuego',
-                'slug' => Str::slug('Consola y videojuego'),
-                'icon' => '<i class="fa-solid fa-gamepad-modern"></i>',
+                'name' => 'Consola y videojuegos',
+                'slug' => Str::slug('Consola y videojuegos'),
+                'icon' => '<i class="fa-solid fa-gamepad"></i>',
             ],
 
             [

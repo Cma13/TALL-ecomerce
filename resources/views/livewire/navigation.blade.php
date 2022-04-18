@@ -1,4 +1,15 @@
-<header class="bg-neutral-700">
+<style>
+    #navigation-menu {
+        height: calc(100vh - 4rem);
+    }
+
+    .navigation-link:hover .navigation-submenu {
+        display: block !important;
+    }
+
+</style>
+
+<header class="bg-neutral-700 sticky top-0">
     <div class="container flex items-center h-16">
         <a href=""
             class="flex flex-col items-center bg-white bg-opacity-25 text-white cursor-pointer semibold h-full justify-center px-4">
@@ -14,7 +25,7 @@
 
         @livewire('search')
 
-        <div class="ml-3 relative">
+        <div class="mx-6 relative">
             @auth
                 <x-jet-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -65,5 +76,29 @@
 
             @endauth
         </div>
+
+        @livewire('dropdown-cart')
     </div>
+    <nav id="navigation-menu" class="bg-neutral-700 bg-opacity-25 absolute w-full">
+        <div class="container h-full">
+            <div class="grid grid-cols-4 h-full relative">
+                <ul class="bg-white">
+                    @foreach ($categories as $category)
+                        <li class="navigation-link text-neutral-500 hover:bg-orange-500 hover:text-white">
+                            <a href="" class="py-2 px-4 text-sm flex items-center">
+                                <span class="flex justify-center w-9">{!! $category->icon !!}</span>
+                                {{ $category->name }}
+                            </a>
+                            <div class="navigation-submenu bg-gray-100 absolute w-3/4 top-0 right-0 h-full hidden">
+                               <x-navigation-subcategories :category="$category" />
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+                <div class="col-span-3 bg-gray-100">
+                    <x-navigation-subcategories :category="$categories->first()" />
+                </div>
+            </div>
+        </div>
+    </nav>
 </header>
