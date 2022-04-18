@@ -1,20 +1,9 @@
-<style>
-    #navigation-menu {
-        height: calc(100vh - 4rem);
-    }
-
-    .navigation-link:hover .navigation-submenu {
-        display: block !important;
-    }
-
-</style>
-
-<header class="bg-neutral-700 sticky top-0">
+<header class="bg-neutral-700 sticky top-0" x-data="dropdown()">
     <div class="container flex items-center h-16">
-        <a href=""
-            class="flex flex-col items-center bg-white bg-opacity-25 text-white cursor-pointer semibold h-full justify-center px-4">
+        <a class="flex flex-col items-center bg-white bg-opacity-25 text-white cursor-pointer semibold h-full justify-center px-4"
+            x-on:click="show()">
             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round"
+                <path :class="{'inline-flex': ! open }" class="inline-flex" stroke-linecap="round"
                     stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
             <span>Categorías</span>
@@ -79,9 +68,10 @@
 
         @livewire('dropdown-cart')
     </div>
-    <nav id="navigation-menu" class="bg-neutral-700 bg-opacity-25 absolute w-full">
+    <nav id="navigation-menu" x-show="open" :class="{'block': open, 'hidden': !open}"
+        class="bg-neutral-700 bg-opacity-25 absolute w-full hidden">
         <div class="container h-full">
-            <div class="grid grid-cols-4 h-full relative">
+            <div class="grid grid-cols-4 h-full relative" x-on:click.away="close()">
                 <ul class="bg-white">
                     @foreach ($categories as $category)
                         <li class="navigation-link text-neutral-500 hover:bg-orange-500 hover:text-white">
@@ -90,7 +80,7 @@
                                 {{ $category->name }}
                             </a>
                             <div class="navigation-submenu bg-gray-100 absolute w-3/4 top-0 right-0 h-full hidden">
-                               <x-navigation-subcategories :category="$category" />
+                                <x-navigation-subcategories :category="$category" />
                             </div>
                         </li>
                     @endforeach
