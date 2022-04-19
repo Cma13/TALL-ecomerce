@@ -1,4 +1,4 @@
-<header class="bg-neutral-700 sticky top-0" x-data="dropdown()">
+<header class="bg-neutral-700 sticky top-0 z-50" x-data="dropdown()">
     <div class="container flex items-center h-16 justify-between md:justify-start">
         <a :class="{'bg-opacity-100 text-orange-500' : open}"
             class="flex flex-col items-center bg-white bg-opacity-25 text-white cursor-pointer semibold h-full justify-center px-6 md:px-4 order-last md:order-first"
@@ -67,7 +67,7 @@
             @endauth
         </div>
 
-        <div class="hidden md:blocl">@livewire('dropdown-cart')</div>
+        <div class="hidden md:block">@livewire('dropdown-cart')</div>
     </div>
     <nav id="navigation-menu" x-show="open" :class="{'block': open, 'hidden': !open}"
         class="bg-neutral-700 bg-opacity-25 absolute w-full hidden">
