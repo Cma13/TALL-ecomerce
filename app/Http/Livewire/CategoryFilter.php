@@ -12,6 +12,7 @@ class CategoryFilter extends Component
     use WithPagination;
 
     public $category, $subcategoryFilter, $brandFilter;
+    public $view = "grid";
 
     public function limpiar()
     {
