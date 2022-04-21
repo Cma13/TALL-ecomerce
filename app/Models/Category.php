@@ -25,6 +25,10 @@ class Category extends Model
     {
         return $this->hasManyThrough(Product::class, Subcategory::class);
     }
-}
 
-//012 Insertar registros en tabla colors
+    //URL amigables
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+}

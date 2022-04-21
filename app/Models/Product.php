@@ -13,7 +13,7 @@ class Product extends Model
     const BORRADOR = 1;
     const PUBLICADO = 2;
 
-    public function brands()
+    public function brand()
     {
         return $this->belongsTo(Brand::class);
     }
