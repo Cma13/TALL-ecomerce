@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glider-js/1.6.6/glider.min.css"
         integrity="sha512-YM6sLXVMZqkCspZoZeIPGXrhD9wxlxEF7MzniuvegURqrTGV2xTfqq1v9FJnczH+5OGFl5V78RgHZGaK34ylVg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ asset('vendor/flex-slider/flexslider.css') }}">
 
     @livewireStyles
 
@@ -25,6 +26,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/glider-js/1.6.6/glider.min.js"
         integrity="sha512-RidPlemZ+Xtdq62dXb81kYFycgFQJ71CKg+YbKw+deBWB0TLIqCraOn6k0CWDH2rGvE1a8ruqMB+4E4OLVJ7Dg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{{ asset('vendor/flex-slider/node_modules/jquery/dist/jquery.js') }}"></script>
+    <script src="{{ asset('vendor/flex-slider/jquery.flexslider-min.js') }}"></script>
 </head>
 
 <body class="font-sans antialiased">

@@ -25,7 +25,7 @@ class Product extends Model
 
     public function colors()
     {
-        return $this->belongsToMany(Color::class);
+        return $this->belongsToMany(Color::class)->withPivot('quantity');
     }
 
     public function sizes()
@@ -36,5 +36,11 @@ class Product extends Model
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable');
+    }
+
+    //URL amigables
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 }

@@ -47,7 +47,7 @@
 
                                 <div class="py-4 px-6">
                                     <h1 class="text-lg font-semibold"><a
-                                            href="">{{ Str::limit($product->name, 20) }}</a>
+                                            href="{{ route('products.show', $product) }}">{{ Str::limit($product->name, 20) }}</a>
                                     </h1>
                                     <p class="font-bold text-neutral-700">US$ {{ $product->price }}</p>
                                 </div>
@@ -68,7 +68,9 @@
                                 <div class="flex-1 py-4 px-6 flex flex-col">
                                     <div class="flex justify-between">
                                         <div>
-                                            <h1 class="text-lg font-semibold text-gray-700">{{ $product->name }}</h1>
+                                            <h1 class="text-lg font-semibold text-gray-700"><a
+                                                    href="{{ route('products.show', $product) }}">{{ Str::limit($product->name, 20) }}</a>
+                                            </h1>
                                             <p class="font-bold text-gray-700">USD {{ $product->price }}</p>
                                         </div>
                                         <div class="flex items-center">
@@ -93,7 +95,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-auto mb-6">
-                                        <x-jet-danger-button>Más información</x-jet-danger-but>
+                                        <x-jet-danger-button><a href="{{ route('products.show', $product) }}">Más información</a></x-jet-danger-but>
                                     </div>
                                 </div>
                             </article>
