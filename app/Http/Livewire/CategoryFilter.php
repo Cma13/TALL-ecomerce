@@ -9,36 +9,49 @@ use Livewire\WithPagination;
 
 class CategoryFilter extends Component
 {
+    public $category, $subcategoria, $marca;
+
+    public $view = 'grid';
+
     use WithPagination;
 
-    public $category, $subcategoryFilter, $brandFilter;
-    public $view = "grid";
+    protected $queryString = ['subcategoria', 'marca'];
 
-    public function limpiar()
+    public function updatedSubcategoria()
     {
-        $this->reset(['subcategoryFilter', 'brandFilter']);
+        $this->resetPage();
+    }
+
+    public function updatedMarca()
+    {
+        $this->resetPage();
     }
 
     public function render()
     {
-        $productsQuery = Product::query()->whereHas('subcategory.category', function (Builder $query) {
+        $productsQuery = Product::query()->whereHas('subcategory.category', function(Builder $query){
             $query->where('id', $this->category->id);
         });
 
-        if ($this->subcategoryFilter) {
-            $productsQuery = $productsQuery->whereHas('subcategory', function (Builder $query) {
-                $query->where('name', $this->subcategoryFilter);
+        if ($this->subcategoria) {
+            $productsQuery = $productsQuery->whereHas('subcategory', function(Builder $query){
+                $query->where('slug', $this->subcategoria);
             });
         }
 
-        if ($this->brandFilter) {
-            $productsQuery = $productsQuery->whereHas('brand', function (Builder $query) {
-                $query->where('name', $this->brandFilter);
+        if ($this->marca) {
+            $productsQuery = $productsQuery->whereHas('brand', function(Builder $query){
+                $query->where('name', $this->marca);
             });
         }
 
-        $products = $productsQuery->paginate(8);
+        $products = $productsQuery->paginate(10);
 
         return view('livewire.category-filter', compact('products'));
+    }
+
+    public function limpiar()
+    {
+        $this->reset(['subcategoria', 'marca', 'page']);
     }
 }

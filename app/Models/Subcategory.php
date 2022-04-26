@@ -9,11 +9,12 @@ class Subcategory extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id', 'create_at', 'updated_at'];
+    protected $fillable = ['name', 'slug', 'category_id', 'color', 'size'];
+    //protected $guarded = ['id', 'created_at', 'updated_at'];
 
     public function products()
     {
-        return $this->hasMany(Products::class);
+        return $this->hasMany(Product::class);
     }
 
     public function category()

@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Builder;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 
 class ColorProductSeeder extends Seeder
 {
@@ -17,8 +16,8 @@ class ColorProductSeeder extends Seeder
     public function run()
     {
         $products = Product::whereHas('subcategory', function(Builder $query){
-            $query->where('color', true)
-                ->where('size', false);
+            $query->where('color',true)
+                ->where('size',false);
         })->get();
 
         foreach ($products as $product) {

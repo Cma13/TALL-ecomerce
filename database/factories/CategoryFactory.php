@@ -3,21 +3,25 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
- */
+
 class CategoryFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array
      */
     public function definition()
     {
+        $name = $this->faker->sentence;
+
         return [
-            'image' => 'categories/' . $this->faker->image(storage_path('app/public/categories'), 640, 480, null, false)
+            'name' => $name,
+            'slug' => Str::slug($name),
+            'icon' => '<i class="fas fa-mobile-alt"></i>',
+            'image' => 'categories/' . $this->faker->image(storage_path('app/public/categories'),640,480,null, false),
         ];
     }
 }

@@ -13,11 +13,11 @@ class Color extends Model
 
     public function products()
     {
-        return $this->hasMany(Products::class);
+        return $this->belongsToMany(Product::class);
     }
 
     public function sizes()
     {
-        return $this->hasMany(Sizes::class);
+        return $this->belongsToMany(Size::class);
     }
 }

@@ -5,31 +5,33 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "7.3|^8.0",
-        "bumbummen99/shoppingcart": "*",
-        "guzzlehttp/guzzle": "^7.2",
+        "php": "^7.3|^8.0",
+        "bumbummen99/shoppingcart": "^4.1",
+        "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7.0.1",
         "jenssegers/date": "^4.0",
-        "laravel/framework": "^9.2",
-        "laravel/jetstream": "^2.7",
-        "laravel/sanctum": "^2.14.1",
-        "laravel/tinker": "^2.7",
-        "laraveles/spanish": "^1.5",
+        "laravel/framework": "^8.75",
+        "laravel/jetstream": "^2.5",
+        "laravel/sanctum": "^2.11",
+        "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.5"
     },
     "require-dev": {
+        "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
+        "laravel/dusk": "^6.21",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "nunomaduro/collision": "^5.10",
+        "phpunit/phpunit": "^9.5.10"
     },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": ["app/helpers.php"]
     },
     "autoload-dev": {
         "psr-4": {
