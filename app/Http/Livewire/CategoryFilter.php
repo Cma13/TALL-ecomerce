@@ -15,18 +15,6 @@ class CategoryFilter extends Component
 
     use WithPagination;
 
-    protected $queryString = ['subcategoria', 'marca'];
-
-    public function updatedSubcategoria()
-    {
-        $this->resetPage();
-    }
-
-    public function updatedMarca()
-    {
-        $this->resetPage();
-    }
-
     public function render()
     {
         $productsQuery = Product::query()->whereHas('subcategory.category', function(Builder $query){
@@ -35,7 +23,7 @@ class CategoryFilter extends Component
 
         if ($this->subcategoria) {
             $productsQuery = $productsQuery->whereHas('subcategory', function(Builder $query){
-                $query->where('slug', $this->subcategoria);
+                $query->where('name', $this->subcategoria);
             });
         }
 
@@ -52,6 +40,6 @@ class CategoryFilter extends Component
 
     public function limpiar()
     {
-        $this->reset(['subcategoria', 'marca', 'page']);
+        $this->reset(['subcategoria', 'marca']);
     }
 }

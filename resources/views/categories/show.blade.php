@@ -6,4 +6,3 @@
         @livewire('category-filter', ['category' => $category])
     </div>
 </x-app-layout>
-
