@@ -68,7 +68,7 @@
             @endauth
         </div>
 
-        <div class="hidden md:block">
+        <div class="hidden md:block cursor-pointer">
             @livewire('dropdown-cart')
         </div>
 
