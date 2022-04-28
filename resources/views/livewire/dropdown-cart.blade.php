@@ -46,7 +46,7 @@ text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full"
                 <div class="py-2 px-3">
                     <p><span class="text-lg text-gray-700 font-bold mt-2">Total:</span> {{ Cart::subtotal() }}&euro;
                     </p>
-                    <x-button-link class="w-full mt-4" color="orange">Ir al carrito de compras</x-button-link>
+                    <x-button-link href="{{ route('shopping-cart')}}" class="w-full mt-4" color="orange">Ir al carrito de compras</x-button-link>
                 </div>
             @endif
         </x-slot>

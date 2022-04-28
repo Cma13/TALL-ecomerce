@@ -28,6 +28,7 @@ class AddCartItemColor extends Component
         $color = $this->product->colors->find($value);
         $this->quantity = qtyAvailable($this->product->id, $this->color_id);
         $this->options['color'] = $color->name;
+        $this->options['colorId'] = $color->id;
     }
 
     public function decrement()
@@ -52,10 +53,9 @@ class AddCartItemColor extends Component
         ]);
 
         $this->quantity = qtyAvailable($this->product->id, $this->color_id);
-
+        $this->emitTo('dropdown-cart', 'render');
         $this->reset('qty');
 
-        $this->emitTo('dropdown-cart', 'render');
     }
 
     public function render()
