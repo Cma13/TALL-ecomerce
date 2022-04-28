@@ -6,7 +6,15 @@
             <option value="{{ $color->id }}">{{ __(ucfirst($color->name)) }}</option>
         @endforeach
     </select>
-    <div class="flex mt-4">
+    <p class="my-4 text-gray-700">
+        <span class="text-lg font-semibold">Stock disponible:</span>
+        @if ($quantity)
+            {{ $quantity }}
+        @else
+            {{ $product->stock }}
+        @endif
+    </p>
+    <div class="flex">
         <div class="mr-4">
             <x-jet-secondary-button disabled x-bind:disabled="$wire.qty <= 1" wire:loading.attr="disabled"
                 wire:target="decrement" wire:click="decrement">
