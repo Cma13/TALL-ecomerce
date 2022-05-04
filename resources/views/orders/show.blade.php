@@ -35,10 +35,13 @@
                 </div>
             </div>
         </div>
-        <div class="bg-white rounded-lg shadow-lg px-6 py-4 mb-6">
+        <div class="bg-white rounded-lg shadow-lg px-6 py-4 mb-6 flex items-center justify-between">
             <p class="text-gray-700"><span class="font-semibold">Número de pedido: </span>Pedido -
                 {{ $order->id }}
             </p>
+            @if ($order->status == 1)
+            <x-button-red href="{{ route('orders.payment', $order) }}">Ir a pagar</x-button-red>                
+            @endif
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
             <div class="grid grid-cols-2 gap-6 text-gray-700">
