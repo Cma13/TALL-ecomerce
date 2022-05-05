@@ -41,6 +41,10 @@
                             {{ __('My Orders') }}
                         </x-jet-dropdown-link>
 
+                        <x-jet-dropdown-link href="{{ route('admin.index') }}">
+                            {{ __('Administrator') }}
+                        </x-jet-dropdown-link>
+
                         <div class="border-t border-gray-100"></div>
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
