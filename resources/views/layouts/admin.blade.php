@@ -25,6 +25,7 @@
     <script src="{{ asset('vendor/flex-slider/node_modules/jquery/dist/jquery.js') }}"></script>
     <script src="{{ asset('vendor/flex-slider/jquery.flexslider-min.js') }}"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 

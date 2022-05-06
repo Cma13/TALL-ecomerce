@@ -9,7 +9,7 @@
         <x-table-responsive>
             <div class="px-6 py-4">
                 <x-jet-input type="text" wire:model="search" class="w-full"
-                    placeholder="Ingrese el nombre del product que quiere buscar" />
+                    placeholder="Ingrese el nombre del producto que quiere buscar" />
             </div>
             @if ($products->count())
                 <table class="min-w-full divide-y divide-gray-200">
@@ -58,11 +58,23 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $product->status == 1 ? 'red' : 'green' }}-100
-                                     text-{{ $product->status == 1 ? 'red' : 'green' }}-800">
-                                        {{ $product->status == 1 ? 'Borrador' : 'Publicado' }}
-                                    </span>
+                                    @switch($product->status)
+                                        @case(1)
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                Borrador
+                                            </span>
+                                        @break
+
+                                        @case(2)
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Publicado
+                                            </span>
+                                        @break
+
+                                        @default
+                                    @endswitch
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                                     {{ $product->price }}&euro;
