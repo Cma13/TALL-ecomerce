@@ -1,5 +1,5 @@
-<div>
-    <div class="bg-white rounded-lg shadow-lg my-12 p-6">
+<div class="mt-4">
+    <div class="bg-gray-100 rounded-lg shadow-lg p-6">
         <div clasS="grid grid-cols-2 gap-6">
             {{-- Color --}}
             <div>
@@ -27,8 +27,8 @@
             </x-jet-button>
         </div>
     </div>
-    @if($size_colors->count())
-        <div class="bg-white rounded-lg shadow-lg p-6">
+    @if ($size_colors->count())
+        <div class="mt-8">
             <table class="table-auto">
                 <thead>
                     <tr>
@@ -50,7 +50,7 @@
                                     wire:target="edit({{ $size_color->pivot->id }})">
                                     Actualizar
                                 </x-jet-secondary-button>
-                                <x-jet-danger-button wire:click="$emit('deletePivot', {{ $size_color->pivot->id }})">
+                                <x-jet-danger-button wire:click="$emit('deleteColorSize', {{ $size_color->pivot->id }})">
                                     Eliminar</x-jet-danger-button>
                             </td>
                         </tr>

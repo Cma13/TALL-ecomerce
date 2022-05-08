@@ -3,15 +3,15 @@
 namespace App\Http\Livewire\Admin;
 
 use App\Models\Color;
-use App\Models\ColorProduct as Pivot;
+use App\Models\ColorSize as Pivot;
 use Livewire\Component;
 
-class ColorProduct extends Component
+class ColorSize extends Component
 {
-    public $product, $colors, $quantity;
+    public $size, $colors, $quantity;
     public $color_id = '';
-    
-    public $pivot_id, $pivot_color_id, $pivot_quantity;
+
+    public $pivot, $pivot_color_id, $pivot_quantity;
     public $open = false;
 
     protected $rules = [
@@ -26,54 +26,53 @@ class ColorProduct extends Component
         $this->validate();
 
         $pivot = Pivot::where('color_id', $this->color_id)
-            ->where('product_id', $this->product->id)
+            ->where('size_id', $this->size->id)
             ->first();
 
         if ($pivot) {
             $pivot->quantity = $pivot->quantity + $this->quantity;
             $pivot->save();
         } else {
-            $this->product->colors()->attach([
+            $this->size->colors()->attach([
                 $this->color_id => [
                     'quantity' => $this->quantity
                 ]
             ]);
         }
 
-        $this->reset(['color_id', 'quantity']);
         $this->emit('saved');
-
-        $this->product = $this->product->fresh();
+        
+        $this->reset(['color_id', 'quantity']);
+        $this->size = $this->size->fresh();
     }
 
-    public function edit(Pivot $pivot_id)
+    public function edit(Pivot $pivot)
     {
         $this->open = true;
 
-        $this->pivot_id = $pivot_id;
-        $this->pivot_color_id = $pivot_id->color_id;
-        $this->pivot_quantity = $pivot_id->quantity;
+        $this->pivot = $pivot;
+        $this->pivot_color_id = $pivot->color_id;
+        $this->pivot_quantity = $pivot->quantity;
     }
 
     public function update()
     {
-        $this->pivot_id->color_id = $this->pivot_color_id;
-        $this->pivot_id->quantity = $this->pivot_quantity;
+        $this->pivot->color_id = $this->pivot_color_id;
+        $this->pivot->quantity = $this->pivot_quantity;
 
-        $this->pivot_id->save();
+        $this->pivot->save();
 
         $this->open = false;
 
-        $this->product = $this->product->fresh();
+        $this->size = $this->size->fresh();
     }
 
     public function delete(Pivot $pivot)
     {
         $pivot->delete();
 
-        $this->product = $this->product->fresh();
+        $this->size = $this->size->fresh();
     }
-
     public function mount()
     {
         $this->colors = Color::all();
@@ -81,8 +80,8 @@ class ColorProduct extends Component
 
     public function render()
     {
-        $size_colors = $this->product->colors;
+        $size_colors = $this->size->colors;
 
-        return view('livewire.admin.color-product', compact('size_colors'));
+        return view('livewire.admin.color-size', compact('size_colors'));
     }
 }

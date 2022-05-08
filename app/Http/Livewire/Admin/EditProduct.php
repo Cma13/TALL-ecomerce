@@ -6,8 +6,10 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
+use App\Models\Image;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
 class EditProduct extends Component
@@ -24,6 +26,11 @@ class EditProduct extends Component
         'product.brand_id' => 'required',
         'product.price' => 'required|numeric',
         'product.quantity' => 'numeric'
+    ];
+
+    public $listeners = [
+        'refreshProduct',
+        'delete'
     ];
 
     public function updatedCategoryId($value)
@@ -65,7 +72,33 @@ class EditProduct extends Component
         $this->product->save();
 
         $this->emit('saved');
+    }
 
+    public function refreshProduct()
+    {
+        $this->product = $this->product->fresh();
+    }
+
+    public function delete()
+    {
+        $images = $this->product->images;
+
+        foreach ($images as $image) {
+            Storage::delete($image->url);
+            $image->delete();
+        }
+
+        $this->product->delete();
+
+        return redirect()->route('admin.index');
+    }
+
+    public function deleteImage(Image $image)
+    {
+        Storage::delete([$image->url]);
+        $image->delete();
+
+        $this->product = $this->product->fresh();
     }
 
     public function mount(Product $product)
