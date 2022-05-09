@@ -73,7 +73,8 @@
                             </td>
                             <td class="py-2">
                                 <div class="flex font-semibold divide-x divide-gray-300">
-                                    <a class="pr-2 hover:text-blue-600 hover:underline cursor-pointer">Editar</a>
+                                    <a class="pr-2 hover:text-blue-600 hover:underline cursor-pointer"
+                                        wire:click="edit('{{ $category->slug }}')">Editar</a>
                                     <a class="pl-2 hover:text-red-600 hover:underline cursor-pointer"
                                         wire:click="$emit('deleteCategory', '{{ $category->slug }}')">Eliminar</a>
                                 </div>
@@ -84,4 +85,59 @@
             </table>
         </x-slot>
     </x-jet-action-section>
+    <x-jet-dialog-modal wire:model="editForm.open">
+        <x-slot name="title">Editar categoría</x-slot>
+        <x-slot name="content">
+            <div class="space-y-3">
+                <div>
+                    @if ($editImage)
+                        <img class="w-full h-64 object-cover object-center" src="{{ $editImage->temporaryUrl() }}"
+                            alt="">
+                    @else
+                        <img class="w-full h-64 object-cover object-center"
+                            src="{{ Storage::url($editForm['image']) }}" alt="">
+                    @endif
+                </div>
+                <div class="">
+                    <x-jet-label value="Nombre" />
+                    <x-jet-input wire:model="editForm.name" class="w-full mt-1" type="text" />
+                    <x-jet-input-error for="editForm.name" />
+                </div>
+                <div class="">
+                    <x-jet-label value="Slug" />
+                    <x-jet-input wire:model="editForm.slug" class="w-full mt-1 bg-gray-200" disabled type="text" />
+                    <x-jet-input-error for="editForm.slug" />
+                </div>
+                <div class="">
+                    <x-jet-label value="Icono" />
+                    <x-jet-input wire:model.defer="editForm.icon" class="w-full mt-1" type="text" />
+                    <x-jet-input-error for="editForm.icon" />
+                </div>
+                <div class="">
+                    <x-jet-label value="Marcas" />
+                    <div class="grid grid-cols-4">
+                        @foreach ($brands as $brand)
+                            <x-jet-label>
+                                <x-jet-checkbox wire:model.defer="editForm.brands" name="brands[]"
+                                    value="{{ $brand->id }}" />
+                                {{ $brand->name }}
+                            </x-jet-label>
+                        @endforeach
+                        <x-jet-input-error for="editForm.brands" />
+                    </div>
+                </div>
+                <div class="">
+                    <x-jet-label value="Imagen" />
+                    <input wire:model="editForm.image" accept="image/*" type="file" class="mt-1"
+                        id="{{ $rand }}">
+                    <x-jet-input-error for="editForm.image" />
+                </div>
+            </div>
+        </x-slot>
+        <x-slot name="footer">
+            <x-jet-action-message class="mr-3" on="updated">Categoría creada</x-jet-action-message>
+            <x-jet-danger-button wire:click="update" wire:loading.attr="disabled" wire:target="editImage, update">Editar categoría
+            </x-jet-danger-button>
+        </x-slot>
+    </x-jet-dialog-modal>
 </div>
