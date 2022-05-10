@@ -11,6 +11,11 @@ class District extends Model
 
     protected $fillable = ['name', 'city_id'];
 
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class);

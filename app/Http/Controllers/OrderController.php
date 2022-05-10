@@ -31,8 +31,9 @@ class OrderController extends Controller
         $this->authorize('author', $order);
 
         $items = json_decode($order->content);
+        $envio = json_decode($order->envio);
 
-        return view('orders.show', compact('order', 'items'));
+        return view('orders.show', compact('order', 'items', 'envio'));
     }
 
 }
