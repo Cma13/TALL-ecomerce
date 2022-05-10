@@ -1171,6 +1171,9 @@ select {
 .-mt-px {
   margin-top: -1px;
 }
+.mr-auto {
+  margin-right: auto;
+}
 .block {
   display: block;
 }
@@ -1302,6 +1305,12 @@ select {
 }
 .w-2 {
   width: 0.5rem;
+}
+.w-1 {
+  width: 0.25rem;
+}
+.w-2\/3 {
+  width: 66.666667%;
 }
 .min-w-0 {
   min-width: 0px;
