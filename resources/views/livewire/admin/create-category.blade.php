@@ -69,7 +69,8 @@
                         <tr>
                             <td class="py-2">
                                 <span class="inline-block w-8 text-center mr-2">{!! $category->icon !!}</span>
-                                <span>{{ $category->name }}</span>
+                                <a class="hover:underline"
+                                    href="{{ route('admin.categories.show', $category) }}">{{ $category->name }}</a>
                             </td>
                             <td class="py-2">
                                 <div class="flex font-semibold divide-x divide-gray-300">
@@ -135,8 +136,9 @@
             </div>
         </x-slot>
         <x-slot name="footer">
-            <x-jet-action-message class="mr-3" on="updated">Categoría creada</x-jet-action-message>
-            <x-jet-danger-button wire:click="update" wire:loading.attr="disabled" wire:target="editImage, update">Editar categoría
+            <x-jet-action-message class="mr-3" on="updated">Categoría editada</x-jet-action-message>
+            <x-jet-danger-button wire:click="update" wire:loading.attr="disabled" wire:target="editImage, update">
+                Actualizar
             </x-jet-danger-button>
         </x-slot>
     </x-jet-dialog-modal>
