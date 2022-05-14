@@ -6,6 +6,32 @@
         </div>
     </x-slot>
     <div class="container-menu py-12">
+        <div class="bg-white rounded-lg shadow-lg py-6 flex mb-4">
+            <div x-data="{ openPages: false }" class="px-6">
+                <button @click="openPages = ! openPages" class="rounded bg-blue-600 font-bold px-4 py-2 text-white">Filas
+                    por página</button>
+
+                <div x-show="openPages" @click.outside="openPages = false" class="bg-gray-100 rounded p-5 w-72">
+                    <x-jet-label value="Introduzca cuantas filas quiere: " />
+                    <div class="flex items-center">
+                        <x-jet-input wire:model="pages" type="range" min="1" max="18" />
+                        <span class="px-3 ml-3 bg-sky-600 text-white font-semibold rounded">{{ $pages }}</span>
+                    </div>
+                </div>
+            </div>
+            <div x-data="{ openColumns: false }" class="px-6">
+                <button @click="openColumns = ! openColumns"
+                    class="rounded bg-blue-600 font-bold px-4 py-2 text-white">Columnas a enseñar</button>
+
+                <div x-show="openColumns" @click.outside="openColumns = false" class="bg-gray-100 rounded p-5 w-72">
+                    @foreach ($columns as $column)
+                        <x-jet-input type="checkbox" wire:model="selectedColumns" value="{{ $column }}" />
+                        <label>{{ $column }}</label>
+                        <br>
+                    @endforeach
+                </div>
+            </div>
+        </div>
         <x-table-responsive>
             <div class="px-6 py-4">
                 <x-jet-input type="text" wire:model="search" class="w-full"
@@ -14,136 +40,132 @@
             @if ($products->count())
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Nombre
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Categoría
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Subcategoría
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Marca
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Fecha de creación
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Estado
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Colores
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Tallas
-                            </th>
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Stock
-                            </th>
-
-                            <th scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                Precio
-                            </th>
-                            <th scope="col" class="relative px-6 py-3">
-                                <span class="sr-only">Editar</span>
-                            </th>
-                        </tr>
+                        @foreach ($columns as $column)
+                            @if ($this->showColumn($column))
+                                <th scope="col"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                    <div class="flex">
+                                        <div class="mx-2">
+                                            {{ $column }}
+                                        </div>
+                                        <span class="{{ App\Http\Livewire\Admin\ShowProductsPlus::show($column) }}">
+                                            <a wire:click="sortProducts('{{ $column }}', 'asc')" class="cursor-pointer">
+                                                <i class="fas fa-arrow-up {{ App\Http\Livewire\Admin\ShowProductsPlus::isColored($column, 'asc') }}"></i></a>
+                                            <a wire:click="sortProducts('{{ $column }}', 'desc')" class="cursor-pointer">
+                                                <i class="fas fa-arrow-down {{ App\Http\Livewire\Admin\ShowProductsPlus::isColored($column, 'desc') }}"></i></a>
+                                        </span>
+                                    </div>
+                                </th>
+                            @endif
+                        @endforeach
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Editar</span>
+                        </th>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($products as $product)
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 object-cover w-10 h-10">
-                                            <img class="w-10 h-10 rounded-full"
-                                                src="{{ $product->images->count() ? Storage::url($product->images->first()->url) : 'img/default.jpg' }}"
-                                                alt="">
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">
-                                                {{ $product->name }}
+                                @if ($this->showColumn('Nombre'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 object-cover w-10 h-10">
+                                                <img class="w-10 h-10 rounded-full"
+                                                    src="{{ $product->images->count() ? Storage::url($product->images->first()->url) : 'img/default.jpg' }}"
+                                                    alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ $product->name }}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $product->subcategory->category->name }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $product->subcategory->name }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $product->brand->name }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {{ \Carbon\Carbon::parse($product->created_at)->format('d/m/Y') }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @switch($product->status)
-                                        @case(1)
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Borrador
-                                            </span>
-                                        @break
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Categoría'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            {{ $product->subcategory->category->name }}
+                                        </div>
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Subcategoría'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ $product->subcategory->name }}
+                                        </div>
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Marca'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ $product->brand->name }}
+                                        </div>
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Fecha de creación'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            {{ \Carbon\Carbon::parse($product->created_at)->format('d/m/Y') }}
+                                        </div>
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Estado'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @switch($product->status)
+                                            @case(1)
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                    Borrador
+                                                </span>
+                                            @break
 
-                                        @case(2)
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Publicado
-                                            </span>
-                                        @break
+                                            @case(2)
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Publicado
+                                                </span>
+                                            @break
 
-                                        @default
-                                    @endswitch
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @if (!$product->subcategory->color)
-                                        No tiene color
-                                    @elseif ($product->subcategory->size)
-                                        @livewire('admin.show-size-colors-product', ['product' => $product],
-                                        key('size-color-product-' . $product->id))
-                                    @else
-                                        @livewire('admin.show-colors-product', ['product' => $product],
-                                        key('color-product-' . $product->id))
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @if (!$product->subcategory->size)
-                                        No tiene talla
-                                    @else
-                                        @livewire('admin.show-size-product', ['product' => $product],
-                                        key('size-product-' . $product->id))
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @if (!$product->subcategory->color)
-                                        {{ $product->quantity }}
-                                    @else
-                                        @livewire('admin.show-qty-product', ['product' => $product],
-                                        key('product-' . $product->id))
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                    {{ $product->price }}&euro;
-                                </td>
+                                            @default
+                                        @endswitch
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Colores'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if (!$product->subcategory->color)
+                                            No tiene color
+                                        @elseif ($product->subcategory->size)
+                                            @livewire('admin.show-size-colors-product', ['product' => $product],
+                                            key('size-color-product-' . $product->id))
+                                        @else
+                                            @livewire('admin.show-colors-product', ['product' => $product],
+                                            key('color-product-' . $product->id))
+                                        @endif
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Tallas'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if (!$product->subcategory->size)
+                                            No tiene talla
+                                        @else
+                                            @livewire('admin.show-size-product', ['product' => $product],
+                                            key('size-product-' . $product->id))
+                                        @endif
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Stock'))
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if (!$product->subcategory->color)
+                                            {{ $product->quantity }}
+                                        @else
+                                            @livewire('admin.show-qty-product', ['product' => $product],
+                                            key('product-' . $product->id))
+                                        @endif
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Precio'))
+                                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                        {{ $product->price }}&euro;
+                                    </td>
+                                @endif
                                 <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                     <a href="{{ route('admin.products.edit', $product) }}"
                                         class="text-indigo-600 hover:text-indigo-900">Editar</a>
