@@ -31,6 +31,73 @@
                     @endforeach
                 </div>
             </div>
+            <div x-data="{ openFilters: false }" class="px-6">
+                <button @click="openFilters = ! openFilters"
+                    class="rounded bg-blue-600 font-bold px-4 py-2 text-white">Filtros avanzados</button>
+
+                <div x-show="openFilters" @click.outside="openFilters = false" class="bg-gray-100 rounded p-5 w-full">
+                    <div class="grid grid-cols-4 grid-rows-2">
+                        <div class="w-full">
+                            <x-jet-label value="Categorías" />
+                            @foreach ($categories as $category)
+                                <x-jet-input type="checkbox" wire:model="selectedCategories"
+                                    value="{{ $category->id }}" />
+                                <label class="w-full">{{ $category->name }}</label>
+                                <br>
+                            @endforeach
+                        </div>
+                        <div class="w-full">
+                            <x-jet-label value="Subcategorías" />
+                            @foreach ($subcategories as $subcategory)
+                                <x-jet-input type="checkbox" wire:model="selectedSubcategories"
+                                    value="{{ $subcategory->id }}" />
+                                <label class="w-full">{{ $subcategory->name }}</label>
+                                <br>
+                            @endforeach
+                        </div>
+                        <div class="w-full">
+                            <x-jet-label value="Marcas" />
+                            @foreach ($brands as $brand)
+                                <x-jet-input type="checkbox" wire:model="selectedBrands" value="{{ $brand->id }}" />
+                                <label class="w-full">{{ $brand->name }}</label>
+                                <br>
+                            @endforeach
+                        </div>
+                        <div>
+                            <div>
+                                <x-jet-label value="Precio mínimo" />
+                                <div class="flex items-center">
+                                    <x-jet-input wire:model="minPriceFilter" type="range" min="0" max="50" />
+                                    <span
+                                        class="px-3 ml-3 bg-sky-600 text-white font-semibold rounded">{{ $minPriceFilter }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <x-jet-label value="Precio máximo" />
+                                <div class="flex items-center">
+                                    <x-jet-input wire:model="maxPriceFilter" type="range" min="51" max="100" />
+                                    <span
+                                        class="px-3 ml-3 bg-sky-600 text-white font-semibold rounded">{{ $maxPriceFilter }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <x-jet-label value="Desde" />
+                                <div class="flex items-center">
+                                    <x-jet-input wire:model="fromFilter" type="date" />
+                                </div>
+                            </div>
+                            <div>
+                                <x-jet-label value="Hasta" />
+                                <div class="flex items-center">
+                                    <x-jet-input wire:model="toFilter" type="date" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <x-table-responsive>
             <div class="px-6 py-4">
@@ -44,16 +111,19 @@
                             @if ($this->showColumn($column))
                                 <th scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                    <div class="flex">
-                                        <div class="mx-2">
+                                    <div class="flex items-center">
+                                        <a wire:click="sortColumns('{{ $column }}')"
+                                            class="hover:underline cursor-pointer">
                                             {{ $column }}
-                                        </div>
-                                        <span class="{{ App\Http\Livewire\Admin\ShowProductsPlus::show($column) }}">
-                                            <a wire:click="sortProducts('{{ $column }}', 'asc')" class="cursor-pointer">
-                                                <i class="fas fa-arrow-up {{ App\Http\Livewire\Admin\ShowProductsPlus::isColored($column, 'asc') }}"></i></a>
-                                            <a wire:click="sortProducts('{{ $column }}', 'desc')" class="cursor-pointer">
-                                                <i class="fas fa-arrow-down {{ App\Http\Livewire\Admin\ShowProductsPlus::isColored($column, 'desc') }}"></i></a>
-                                        </span>
+                                            <span class="ml-2">
+                                                <a>
+                                                    <i
+                                                        class="fas fa-arrow-up {{ $sortDirection == 'asc' && $this->isColored($column) ? 'text-orange-600' : 'text-gray-300' }}"></i></a>
+                                                <a>
+                                                    <i
+                                                        class="fas fa-arrow-down {{ $sortDirection == 'desc' && $this->isColored($column) ? 'text-orange-600' : 'text-gray-300' }}"></i></a>
+                                            </span>
+                                        </a>
                                     </div>
                                 </th>
                             @endif
@@ -133,11 +203,9 @@
                                         @if (!$product->subcategory->color)
                                             No tiene color
                                         @elseif ($product->subcategory->size)
-                                            @livewire('admin.show-size-colors-product', ['product' => $product],
-                                            key('size-color-product-' . $product->id))
+                                            @livewire('admin.show-size-colors-product', ['product' => $product], key('size-color-product-' . $product->id))
                                         @else
-                                            @livewire('admin.show-colors-product', ['product' => $product],
-                                            key('color-product-' . $product->id))
+                                            @livewire('admin.show-colors-product', ['product' => $product], key('color-product-' . $product->id))
                                         @endif
                                     </td>
                                 @endif
@@ -146,8 +214,7 @@
                                         @if (!$product->subcategory->size)
                                             No tiene talla
                                         @else
-                                            @livewire('admin.show-size-product', ['product' => $product],
-                                            key('size-product-' . $product->id))
+                                            @livewire('admin.show-size-product', ['product' => $product], key('size-product-' . $product->id))
                                         @endif
                                     </td>
                                 @endif
@@ -156,8 +223,7 @@
                                         @if (!$product->subcategory->color)
                                             {{ $product->quantity }}
                                         @else
-                                            @livewire('admin.show-qty-product', ['product' => $product],
-                                            key('product-' . $product->id))
+                                            @livewire('admin.show-qty-product', ['product' => $product], key('product-' . $product->id))
                                         @endif
                                     </td>
                                 @endif

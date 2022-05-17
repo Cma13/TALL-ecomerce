@@ -2,8 +2,12 @@
 
 namespace App\Http\Livewire\Admin;
 
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\Subcategory;
 use App\ProductFilter;
+use Illuminate\Support\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,6 +20,14 @@ class ShowProductsPlus extends Component
     public $selectedColumns = [];
     public $sortColumn = 'products.name';
     public $sortDirection = 'asc';
+    public $selectedCategories = [];
+    public $selectedSubcateries = [];
+    public $selectedBrands = [];
+    public $minPriceFilter = 0;
+    public $maxPriceFilter = 100;
+    public $fromFilter;
+    public $toFilter;
+
 
     public function updatedSearch()
     {
@@ -27,23 +39,66 @@ class ShowProductsPlus extends Component
         $this->pages = $value;
     }
 
+    public function updatedMinPriceFilters($value)
+    {
+        $this->minPriceFilters = $value;
+    }
+
+    public function updatedMaxPriceFilters($value)
+    {
+        $this->maxPriceFilter = $value;
+    }
+
+    public function updatedFromFilter($value)
+    {
+        $this->fromFilter = $value;
+    }
+
+    public function updatedToFilter($value)
+    {
+        $this->toFilter = $value;
+    }
+
     public function showColumn($column)
     {
         return in_array($column, $this->selectedColumns);
     }
 
-    public function sortProducts($sortColumn, $sortDirection)
+    public function sortColumns($column)
     {
-        $this->sortColumn = $sortColumn;
-        $this->sortDirection = $sortDirection;
-    }
+        $this->sortColumn = ProductFilter::transSortColumn($column);
 
-    public function isColored($column = 'Nombre', $direction = 'asc')
-    {
-        if ($column === $this->sortColumn && $direction === $this->sortDirection) {
-            return 'text-orange-600';
+        if ($this->sortDirection === 'asc') {
+            $this->sortDirection = 'desc';
+        } elseif ($this->sortDirection === 'desc') {
+            $this->sortDirection = 'asc';
         }
     }
+
+    public function getCategories()
+    {
+        $this->selectedCategories = Category::all()->pluck('id');
+    }
+
+    public function getSubcategories() 
+    {
+        $this->selectedSubcategories = Subcategory::all()->pluck('id');
+    }
+
+    public function getBrands()
+    {
+        $this->selectedBrands = Brand::all()->pluck('id');
+    }
+
+    public function isColored($column = 'Nombre')
+    {
+        $column = ProductFilter::transSortColumn($column);
+
+        if ($column === $this->sortColumn) {
+            return true;
+        }
+    }
+
 
     public function show($column)
     {
@@ -52,15 +107,41 @@ class ShowProductsPlus extends Component
         }
     }
 
+    protected function getProducts(ProductFilter $productFilter)
+    {
+        $products = Product::query()
+            ->filterBy($productFilter, [
+                'search' => $this->search,
+                'order' => [$this->sortColumn, $this->sortDirection],
+                'categories' =>  $this->selectedCategories,
+                'subcategories' => $this->selectedSubcategories,
+                'brands' => $this->selectedBrands,
+                'prices' => [$this->minPriceFilter, $this->maxPriceFilter],
+                'dates' => [$this->fromFilter, $this->toFilter],
+            ])
+            ->paginate($this->pages);
+
+        $products->appends($productFilter->valid());
+
+        return $products;
+    }
+
     public function mount()
     {
         $this->selectedColumns = $this->columns;
+
+        $this->getCategories();
+        $this->getSubcategories();
+        $this->getBrands();
     }
 
-    public function render()
+    public function render(ProductFilter $productFilter)
     {
-        $products = ProductFilter::queryProducts($this->search, $this->pages, $this->sortColumn, $this->sortDirection);
-
-        return view('livewire.admin.show-products-plus', compact('products'))->layout('layouts.admin');
+        return view('livewire.admin.show-products-plus', [
+            'products' => $this->getProducts($productFilter),
+            'categories' => Category::all(),
+            'subcategories' => Subcategory::all(),
+            'brands' => Brand::all(),
+        ])->layout('layouts.admin');
     }
 }
