@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Models\Product;
+use App\Models\Size;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 
 class ProductFilter extends QueryFilter
@@ -45,7 +47,9 @@ class ProductFilter extends QueryFilter
             'subcategories' => 'array|exists:subcategories,id',
             'brands' => 'array|exists:brands,id',
             'prices' => 'array|min:0|max:100',
-            'dates' => 'array'
+            'dates' => 'array',
+            'colors' => 'filled',
+            'sizes' => 'filled',
         ];
     }
 
@@ -98,5 +102,25 @@ class ProductFilter extends QueryFilter
         if ($dateFilters[0] != null && $dateFilters[1] != null) {
             return $query->whereBetween('products.created_at', [$dateFilters[0], $dateFilters[1]]);
         }
+    }
+
+    public function colors($query, $selectedColors)
+    {
+        return $query->whereHas('colors', function ($query) use ($selectedColors) {
+            $query->where('colors.id', $selectedColors);
+        })->orWhereHas('sizes', function ($query) use ($selectedColors) {
+            $query->where(function ($query) use ($selectedColors) {
+                $query->whereHas('colors', function ($query) use ($selectedColors) {
+                    $query->where('color_id', $selectedColors);
+                });
+            });
+        });
+    }
+
+    public function sizes($query, $selectedSizes)
+    {
+        return $query->whereHas('sizes', function ($query) use ($selectedSizes) {
+            $query->where('sizes.name', $selectedSizes);
+        });
     }
 }

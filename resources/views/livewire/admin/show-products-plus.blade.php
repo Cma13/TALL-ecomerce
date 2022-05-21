@@ -55,11 +55,27 @@
                                 <br>
                             @endforeach
                         </div>
-                        <div class="w-full">
+                        <div>
                             <x-jet-label value="Marcas" />
                             @foreach ($brands as $brand)
                                 <x-jet-input type="checkbox" wire:model="selectedBrands" value="{{ $brand->id }}" />
                                 <label class="w-full">{{ $brand->name }}</label>
+                                <br>
+                            @endforeach
+                        </div>
+                        <div>
+                            <x-jet-label value="Colores" />
+                            @foreach ($colors as $color)
+                                <x-jet-input type="checkbox" wire:model="selectedColors" value="{{ $color->id }}" />
+                                <label class="w-full">{{ __(ucfirst($color->name)) }}</label>
+                                <br>
+                            @endforeach
+                        </div>
+                        <div>
+                            <x-jet-label value="Tallas" />
+                            @foreach ($sizes as $size)
+                                <x-jet-input type="checkbox" wire:model="selectedSizes" value="{{ $size }}" />
+                                <label class="w-full">{{ $size }}</label>
                                 <br>
                             @endforeach
                         </div>

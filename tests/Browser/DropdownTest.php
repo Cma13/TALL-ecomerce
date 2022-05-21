@@ -2,15 +2,14 @@
 
 namespace Tests\Browser;
 
-use App\Models\Category;
-use App\Models\Subcategory;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
+use Tests\CreateData;
 
 class DropdownTest extends DuskTestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, CreateData;
 
     /**
      * A Dusk test example.
@@ -18,26 +17,19 @@ class DropdownTest extends DuskTestCase
      * @return void
      */
 
+    public function createData()
+    {
+        $category1 = $this->createCategory('Celulares y tablets');
+        $category2 = $this->createCategory('Computación');
+
+        $this->createSubcategory('Celulares y smartphones' ,$category1);
+        $this->createSubcategory('Portátiles', $category2);
+    }
+
     /** @test */
     public function it_shows_the_dropdown_menu_when_clicking_the_button()
     {
-        $category1 = Category::factory()->create([
-            'name' => 'Celulares y tablets'
-        ]);
-        
-        $category2 = Category::factory()->create([
-            'name' => 'Computación'
-        ]);
-
-        Subcategory::factory()->create([
-            'category_id' => $category1->id,
-            'name' => 'Celulares y smartphones'
-        ]);
-
-        Subcategory::factory()->create([
-            'category_id' => $category2->id,
-            'name' => 'Portátiles',
-        ]);
+        $this->createData();
 
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
@@ -50,23 +42,7 @@ class DropdownTest extends DuskTestCase
     /** @test */
     public function it_shows_the_subcategories_list_when_mouseover_category()
     {
-        $category1 = Category::factory()->create([
-            'name' => 'Celulares y tablets'
-        ]);
-        
-        $category2 = Category::factory()->create([
-            'name' => 'Computación'
-        ]);
-
-        Subcategory::factory()->create([
-            'category_id' => $category1->id,
-            'name' => 'Celulares y smartphones'
-        ]);
-
-        Subcategory::factory()->create([
-            'category_id' => $category2->id,
-            'name' => 'Portátiles',
-        ]);
+        $this->createData();
 
         $this->browse(function (Browser $browser) {
             $browser->visit('/')

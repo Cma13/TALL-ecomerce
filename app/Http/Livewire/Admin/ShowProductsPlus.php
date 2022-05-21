@@ -4,7 +4,9 @@ namespace App\Http\Livewire\Admin;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Product;
+use App\Models\Size;
 use App\Models\Subcategory;
 use App\ProductFilter;
 use Illuminate\Support\Carbon;
@@ -27,7 +29,8 @@ class ShowProductsPlus extends Component
     public $maxPriceFilter = 100;
     public $fromFilter;
     public $toFilter;
-
+    public $selectedColors = [];
+    public $selectedSizes = [];
 
     public function updatedSearch()
     {
@@ -99,7 +102,6 @@ class ShowProductsPlus extends Component
         }
     }
 
-
     public function show($column)
     {
         if ($column === 'Colores' || $column === 'Tallas' || $column === 'Estado' || $column === 'Stock') {
@@ -118,6 +120,8 @@ class ShowProductsPlus extends Component
                 'brands' => $this->selectedBrands,
                 'prices' => [$this->minPriceFilter, $this->maxPriceFilter],
                 'dates' => [$this->fromFilter, $this->toFilter],
+                'colors' => $this->selectedColors,
+                'sizes' => $this->selectedSizes
             ])
             ->paginate($this->pages);
 
@@ -142,6 +146,8 @@ class ShowProductsPlus extends Component
             'categories' => Category::all(),
             'subcategories' => Subcategory::all(),
             'brands' => Brand::all(),
+            'colors' => Color::all(),
+            'sizes' => Size::all()->pluck('name')->unique(),
         ])->layout('layouts.admin');
     }
 }
