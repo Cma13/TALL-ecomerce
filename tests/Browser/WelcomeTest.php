@@ -34,7 +34,6 @@ class WelcomeTest extends DuskTestCase
                 ->waitFor('.product-item');
             $elements = $browser->driver->findElements(WebDriverBy::className('product-item'));
             $this->assertCount(5, $elements);
-            $this->assertNotCount(6, $elements);
         });
     }
 
@@ -58,7 +57,6 @@ class WelcomeTest extends DuskTestCase
                 ->waitFor('.product-item');
             $elements = $browser->driver->findElements(WebDriverBy::className('product-item'));
             $this->assertCount(7, $elements);
-            $this->assertNotCount(8, $elements);
             $this->assertNotCount(10, $elements);
         });
     }
@@ -70,15 +68,12 @@ class WelcomeTest extends DuskTestCase
         $subcategory = $this->createSubcategory($category);
         $brand = $this->createBrand($category);
 
-        $this->createProduct($subcategory, $brand);
-
         $this->browse(function (Browser $browser) use ($category, $subcategory, $brand) {
             $browser->visit('/')
                 ->click('@' . $category->name)
                 ->assertRouteIs('categories.show', $category)
-                ->pause(1500)
-                ->assertSee($subcategory->name)
-                ->assertSee($brand->name);
+                ->assertSee(ucfirst($subcategory->name))
+                ->assertSee(ucfirst($brand->name));
         });
     }
 }

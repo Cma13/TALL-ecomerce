@@ -17,41 +17,40 @@ class DropdownTest extends DuskTestCase
      * @return void
      */
 
-    public function createData()
-    {
-        $category1 = $this->createCategory('Celulares y tablets');
-        $category2 = $this->createCategory('Computación');
-
-        $this->createSubcategory('Celulares y smartphones' ,$category1);
-        $this->createSubcategory('Portátiles', $category2);
-    }
-
     /** @test */
     public function it_shows_the_dropdown_menu_when_clicking_the_button()
     {
-        $this->createData();
+        $category1 = $this->createCategory();
+        $category2 = $this->createCategory();
 
-        $this->browse(function (Browser $browser) {
+        $this->createSubcategory($category1);
+        $this->createSubcategory($category2);
+
+        $this->browse(function (Browser $browser) use ($category1, $category2){
             $browser->visit('/')
                     ->click('@categoriasLink')
-                    ->assertSee('Celulares y tablets')
-                    ->assertSee('Computación');
+                    ->assertSee($category1->name)
+                    ->assertSee($category2->name);
         });
     }
 
     /** @test */
     public function it_shows_the_subcategories_list_when_mouseover_category()
     {
-        $this->createData();
+        $category1 = $this->createCategory();
+        $category2 = $this->createCategory();
 
-        $this->browse(function (Browser $browser) {
+        $subcategory1 = $this->createSubcategory($category1);
+        $subcategory2 = $this->createSubcategory($category2);
+
+        $this->browse(function (Browser $browser) use ($category1, $category2, $subcategory1, $subcategory2){
             $browser->visit('/')
                     ->click('@categoriasLink')
-                    ->assertSee('Celulares y tablets')
-                    ->assertSee('Computación')
-                    ->mouseover('@category_Celulares y tablets')
-                    ->assertSee('Celulares y smartphones')
-                    ->assertDontSee('Portátiles');
+                    ->assertSee($category1->name)
+                    ->assertSee($category2->name)
+                    ->mouseover('@category_' . $category1->name)
+                    ->assertSee($subcategory1->name)
+                    ->assertDontSee($subcategory2->name);
         });
     }
 }

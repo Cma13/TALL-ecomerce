@@ -18,11 +18,12 @@ class SubcategoryFactory extends Factory
         $category = Category::all()->random();
         $color = collect([true,false])->random();
         $size = collect([true,false])->random();
+        $name = $this->faker->word();
 
         return [
             'category_id' => $category->id,
-            'name' => 'Mujeres',
-            'slug' => Str::slug('Mujeres'),
+            'name' => $name,
+            'slug' => Str::slug($name),
             'color' => $color,
             'size' => $color ? $size : false,
         ];

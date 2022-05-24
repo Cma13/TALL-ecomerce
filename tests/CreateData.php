@@ -13,32 +13,18 @@ use App\Models\User;
 
 trait CreateData
 {
-    public function createCategory($name = false)
+    public function createCategory()
     {
-        if ($name) {
-            return Category::factory()->create(['name' => $name]);
-        } else {
-            return Category::factory()->create();
-        }
+        return Category::factory()->create();
     }
 
-    public function createSubcategory($category, $name = false, $color = false, $size = false)
+    public function createSubcategory($category, $color = false, $size = false)
     {
-        if($name) {
-            return Subcategory::factory()->create([
-                'category_id' => $category->id,
-                'name' => $name,
-                'color' => $color,
-                'size' => $size
-            ]);
-        } else {
-            return Subcategory::factory()->create([
-                'category_id' => $category->id,
-                'color' => $color,
-                'size' => $size
-            ]);
-        }
-        
+        return Subcategory::factory()->create([
+            'category_id' => $category->id,
+            'color' => $color,
+            'size' => $size
+        ]);
     }
 
     public function createBrand($category)
@@ -65,7 +51,7 @@ trait CreateData
         return Size::factory()->create(['product_id' => $product->id]);
     }
 
-    public function createProduct($subcategory, $brand, $quantity = 5, $status = 2, $size = false , $color = false, $images = 1)
+    public function createProduct($subcategory, $brand, $quantity = 5, $status = 2, $size = false, $color = false, $images = 1)
     {
         $product = Product::factory()->create([
             'subcategory_id' => $subcategory->id,
@@ -74,7 +60,7 @@ trait CreateData
             'status' => $status
         ]);
 
-        if($color && $size) {
+        if ($color && $size) {
             $product->quantity = null;
             $productColor = $this->createColor($product);
             $productSize = $this->createSize($product);
@@ -101,5 +87,4 @@ trait CreateData
         $this->createUser('Prueba');
         $product = $this->createProduct($subcategory, $brand);
     }
-
 }
