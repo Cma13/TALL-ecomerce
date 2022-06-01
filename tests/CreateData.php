@@ -39,11 +39,9 @@ trait CreateData
         return User::factory()->create(['name' => $name]);
     }
 
-    public function createColor($product)
+    public function createColor()
     {
-        $color = Color::factory()->create();
-        $product->colors()->attach($color->id);
-        return $color;
+        return Color::factory()->create();
     }
 
     public function createSize($product)
@@ -62,12 +60,12 @@ trait CreateData
 
         if ($color && $size) {
             $product->quantity = null;
-            $productColor = $this->createColor($product);
+            $productColor = $this->createColor();
             $productSize = $this->createSize($product);
             $productSize->colors()->attach($productColor->id, ['quantity' => $quantity]);
         } elseif ($color && !$size) {
             $product->quantity = null;
-            $productColor = $this->createColor($product);
+            $productColor = $this->createColor();
             $product->colors()->attach($productColor->id, ['quantity' => $quantity]);
         }
 

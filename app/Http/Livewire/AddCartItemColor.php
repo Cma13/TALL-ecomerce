@@ -41,12 +41,21 @@ class AddCartItemColor extends Component
         $this->qty++;
     }
 
+    public function checkQty($qty)
+    {
+        if ($qty >= qtyAvailable($this->product->id, $this->color_id)) {
+            return qtyAvailable($this->product->id, $this->color_id);
+        } else {
+            return $qty;
+        }
+    }
+
     public function addItem()
     {
         Cart::add([
             'id' => $this->product->id,
             'name' => $this->product->name,
-            'qty' => $this->qty,
+            'qty' => $this->checkQty($this->qty),
             'price' => $this->product->price,
             'weight' => 550,
             'options' => $this->options
