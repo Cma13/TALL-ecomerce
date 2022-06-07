@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\ProductsController;
 use App\Http\Livewire\AddCartItem;
 use App\Http\Livewire\AddCartItemColor;
 use App\Http\Livewire\AddCartItemSize;
-use App\Http\Livewire\DropdownCart;
+use App\Http\Livewire\ShoppingCart;
+use App\Http\Livewire\UpdateCartItem;
+use App\Http\Livewire\UpdateCartItemColor;
+use App\Http\Livewire\UpdateCartItemSize;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -20,74 +21,8 @@ class ShoppingCartTest extends TestCase
     use RefreshDatabase, CreateData;
 
     /** @test */
-    public function a_item_without_color_can_be_added_to_cart()
+    public function it_shows_all_the_items_in_the_cart()
     {
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category);
-        $brand = $this->createBrand($category);
-
-        $product1 = $this->createProduct($subcategory, $brand);
-        $product2 = $this->createProduct($subcategory, $brand);
-
-        Livewire::test(AddCartItem::class, ['product' => $product1])
-            ->call('addItem', $product1)
-            ->assertStatus(200);
-        $this->assertEquals($product1->id, Cart::content()->first()->id);
-        $this->assertNotEquals($product2->id, Cart::content()->first()->id);
-        $this->assertTrue(Cart::content()->first()->color_id == null);
-        $this->assertTrue(Cart::content()->first()->size_id == null);
-    }
-
-    /** @test */
-    public function a_item_with_color_can_be_added_to_cart()
-    {
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category, true);
-        $brand = $this->createBrand($category);
-
-        $product1 = $this->createProduct($subcategory, $brand, 2, 2, false, true);
-        $color = $product1->colors()->first();
-        $product2 = $this->createProduct($subcategory, $brand);
-
-        Livewire::test(AddCartItemColor::class, ['product' => $product1])
-            ->set('options', ['color' => $color->name])
-            ->call('addItem', $product1)
-            ->assertStatus(200);
-        $this->assertEquals($product1->id, Cart::content()->first()->id);
-        $this->assertNotEquals($product2->id, Cart::content()->first()->id);
-        $this->assertTrue(Cart::content()->first()->options['color'] == $color->name);
-        $this->assertTrue(Cart::content()->first()->size_id == null);
-    }
-
-    /** @test */
-    public function a_item_with_color_and_size_can_be_added_to_cart()
-    {
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category, true);
-        $brand = $this->createBrand($category);
-
-        $product1 = $this->createProduct($subcategory, $brand, 2, 2, true, true);
-        $size = $product1->sizes()->first();
-        $color = $size->colors()->first();
-        $product2 = $this->createProduct($subcategory, $brand);
-
-        Livewire::test(AddCartItemSize::class, ['product' => $product1])
-            ->set('options', [
-                'color' => $color->name,
-                'size' => $size->name
-            ])
-            ->call('addItem', $product1)
-            ->assertStatus(200);
-        $this->assertEquals($product1->id, Cart::content()->first()->id);
-        $this->assertNotEquals($product2->id, Cart::content()->first()->id);
-        $this->assertTrue(Cart::content()->first()->options['color'] == $color->name);
-        $this->assertTrue(Cart::content()->first()->options['size'] == $size->name);
-    }
-
-    /** @test */
-    public function it_shows_the_added_items_when_clicking_the_shopping_cart()
-    {
-
         $category = $this->createCategory();
         $subcategory = $this->createSubcategory($category);
         $brand = $this->createBrand($category);
@@ -99,212 +34,204 @@ class ShoppingCartTest extends TestCase
 
         $productSize = $this->createProduct($subcategory, $brand, 2, 2, true, true);
         $size = $productSize->sizes()->first();
-        $color = $size->colors()->first();
+        $colorSize = $size->colors()->first();
 
         Livewire::test(AddCartItem::class, ['product' => $product])
-            ->call('addItem', $product)
-            ->assertStatus(200);
+            ->call('addItem', $product);
 
         Livewire::test(AddCartItemColor::class, ['product' => $productColor])
-            ->set('options', ['color' => $color->name])
-            ->call('addItem', $productColor)
-            ->assertStatus(200);
+            ->set('options', [
+                'color' => $color->name,
+                'colorId' => $color->id
+            ])
+            ->call('addItem', $productColor);
 
         Livewire::test(AddCartItemSize::class, ['product' => $productSize])
             ->set('options', [
-                'color' => $color->name,
-                'size' => $size->name
+                'color' => $colorSize->name,
+                'colorId' => $colorSize->id,
+                'size' => $size->name,
+                'sizeId' => $size->id
             ])
-            ->call('addItem', $productSize)
-            ->assertStatus(200);
+            ->call('addItem', $productSize);
 
-        Livewire::test(DropdownCart::class)
-            ->call('render')
-            ->assertStatus(200)
-            //Producto sin color ni talla
+        Livewire::test(ShoppingCart::class)
             ->assertSee($product->name)
-            ->assertSee($product->quantity)
-            //Producto con color
             ->assertSee($productColor->name)
-            ->assertSee(ucfirst($color->name))
-            ->assertSee($color->quantity)
-            //Producto con color y talla
-            ->assertSee($productSize->name)
-            ->assertSee($size->name)
-            ->assertSee($size->colors()->pluck('quantity')->first());
+            ->assertSee($productSize->name);
     }
 
     /** @test */
-    public function the_number_in_the_red_circle_increments_when_an_item_is_added_to_the_shopping_cart()
+    public function it_can_change_the_qty_of_a_product_in_the_shopping_cart()
     {
         $category = $this->createCategory();
         $subcategory = $this->createSubcategory($category);
         $brand = $this->createBrand($category);
 
         $product = $this->createProduct($subcategory, $brand);
-        $product2 = $this->createProduct($subcategory, $brand);
 
-        Livewire::test(AddCartItem::class, ['product' => $product])
-            ->call('addItem', $product)
-            ->assertStatus(200);
-        $this->assertEquals($product->id, Cart::content()->first()->id);
-
-        Livewire::test(DropdownCart::class)
-            ->call('render')
-            ->assertStatus(200)
-            ->assertSee(Cart::count());
-        $this->assertEquals(Cart::count(), 1);
-
-        Livewire::test(AddCartItem::class, ['product' => $product2])
-            ->call('addItem', $product2)
-            ->assertStatus(200);
-        $this->assertEquals($product2->id, Cart::content()->last()->id);
-
-        Livewire::test(DropdownCart::class)
-            ->call('render')
-            ->assertStatus(200)
-            ->assertSee(Cart::count());
-        $this->assertEquals(Cart::count(), 2);
-    }
-
-    /** @test */
-    public function you_cannot_add_more_qty_than_the_one_in_stock_with_product_without_color_and_size()
-    {
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category);
-        $brand = $this->createBrand($category);
-
-        $product = $this->createProduct($subcategory, $brand, 5);
-
-        Livewire::test(AddCartItem::class, ['product' => $product])
-            ->set('qty', 3)
-            ->call('addItem', $product)
-            ->set('qty', 3)
-            ->call('addItem', $product);
-        $this->assertEquals($product->id, Cart::content()->first()->id);
-        $this->assertEquals(Cart::content()->first()->qty, 5);
-    }
-
-    /** @test */
-    public function you_cannot_add_more_qty_than_the_one_in_stock_with_product_with_color()
-    {
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category);
-        $brand = $this->createBrand($category);
-
-        $productColor = $this->createProduct($subcategory, $brand, 5, 2, false, true);
+        $productColor = $this->createProduct($subcategory, $brand, 2, 2, false, true);
         $color = $productColor->colors()->first();
 
-        Livewire::test(AddCartItemColor::class, ['product' => $productColor])
-            ->set('options', ['color' => $color->name])
-            ->set('qty', 3)
-            ->call('addItem', $productColor)
-            ->set('options', ['color' => $color->name])
-            ->set('qty', 3)
-            ->call('addItem', $productColor);
-        $this->assertEquals($productColor->id, Cart::content()->first()->id);
-        $this->assertEquals(Cart::content()->first()->qty, 5);
-    }
-
-    /** @test */
-    public function you_cannot_add_more_qty_than_the_one_in_stock_with_product_with_color_and_size()
-    {
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category);
-        $brand = $this->createBrand($category);
-
-        $productSize = $this->createProduct($subcategory, $brand, 5, 2, true, true);
+        $productSize = $this->createProduct($subcategory, $brand, 2, 2, true, true);
         $size = $productSize->sizes()->first();
-        $color = $size->colors()->first();
-
-        Livewire::test(AddCartItemSize::class, ['product' => $productSize])
-            ->set('options', [
-                'color' => $color->name,
-                'size' => $size->name
-            ])
-            ->set('qty', 3)
-            ->call('addItem', $productSize)
-            ->set('options', [
-                'color' => $color->name,
-                'size' => $size->name
-            ])
-            ->set('qty', 3)
-            ->call('addItem', $productSize);
-        $this->assertEquals($productSize->id, Cart::content()->first()->id);
-        $this->assertEquals(Cart::content()->first()->qty, 5);
-    }
-
-    /** @test */
-    public function it_shows_the_stock_of_a_product_without_color_size()
-    {
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category);
-        $brand = $this->createBrand($category);
-
-        $product = $this->createProduct($subcategory, $brand, 5);
+        $colorSize = $size->colors()->first();
 
         Livewire::test(AddCartItem::class, ['product' => $product])
-            ->assertStatus(200)
-            ->assertSee($product->quantity);
-    }
-
-    /** @test */
-    public function it_shows_the_stock_of_a_product_with_color()
-    {
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category, true);
-        $brand = $this->createBrand($category);
-
-        $productColor = $this->createProduct($subcategory, $brand, 5, 2, false, true);
-        $color1 = $productColor->colors()->first();
-        $color2 = $this->createColor();
-
-        $productColor->colors()->attach($color2->id, [
-            'quantity' => 7
-        ]);
+            ->call('addItem', $product);
 
         Livewire::test(AddCartItemColor::class, ['product' => $productColor])
-            ->assertStatus(200)
-            ->assertSee(12)
-            ->set(['color_id' => ucfirst($color1->id)])
-            ->assertSee(ucfirst($color1->name))
-            ->assertSee($color1->quantity)
-            ->set(['color_id' => ucfirst($color2->id)])
-            ->assertSee(ucfirst($color2->name))
-            ->assertSee($color2->quantity);
+            ->set('options', [
+                'color' => $color->name,
+                'colorId' => $color->id
+            ])
+            ->call('addItem', $productColor);
+
+        Livewire::test(AddCartItemSize::class, ['product' => $productSize])
+            ->set('options', [
+                'color' => $colorSize->name,
+                'colorId' => $colorSize->id,
+                'size' => $size->name,
+                'sizeId' => $size->id
+            ])
+            ->call('addItem', $productSize);
+
+        $items = Cart::content();
+
+        Livewire::test(ShoppingCart::class)
+            ->assertSee($product->name)
+            ->assertSee($productColor->name)
+            ->assertSee($productSize->name);
+
+        $this->assertEquals($items->first()->qty, 1);
+        $this->assertEquals($items->where('id', $productColor->id)->first()->qty, 1);
+        $this->assertEquals($items->last()->qty, 1);
+
+        Livewire::test(UpdateCartItem::class, ['rowId' => $items->first()->rowId])
+            ->call('increment');
+
+        Livewire::test(UpdateCartItemColor::class, ['rowId' => $items->where('id', $productColor->id)->first()->rowId])
+            ->call('increment');
+
+        Livewire::test(UpdateCartItemSize::class, ['rowId' => $items->last()->rowId])
+            ->call('increment');
+
+        Livewire::test(ShoppingCart::class)
+            ->assertSee($product->name)
+            ->assertSee($productColor->name)
+            ->assertSee($productSize->name);
+
+        $this->assertEquals($items->first()->qty, 2);
+        $this->assertEquals($items->where('id', $productColor->id)->first()->qty, 2);
+        $this->assertEquals($items->last()->qty, 2);
+
+        Livewire::test(UpdateCartItem::class, ['rowId' => $items->first()->rowId])
+            ->call('decrement');
+
+        Livewire::test(UpdateCartItemColor::class, ['rowId' => $items->where('id', $productColor->id)->first()->rowId])
+            ->call('decrement');
+
+        Livewire::test(UpdateCartItemSize::class, ['rowId' => $items->last()->rowId])
+            ->call('decrement');
+
+        Livewire::test(ShoppingCart::class)
+            ->assertSee($product->name)
+            ->assertSee($productColor->name)
+            ->assertSee($productSize->name);
+
+        $this->assertEquals($items->first()->qty, 1);
+        $this->assertEquals($items->where('id', $productColor->id)->first()->qty, 1);
+        $this->assertEquals($items->last()->qty, 1);
     }
 
     /** @test */
-    public function it_shows_the_stock_of_a_product_with_color_and_size()
+    public function it_can_delete_an_item_in_the_shopping_cart()
     {
         $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category, true, true);
+        $subcategory = $this->createSubcategory($category);
         $brand = $this->createBrand($category);
 
-        $productSize = $this->createProduct($subcategory, $brand, 5, 2, true, true);
+        $product = $this->createProduct($subcategory, $brand);
+
+        $productColor = $this->createProduct($subcategory, $brand, 2, 2, false, true);
+        $color = $productColor->colors()->first();
+
+        $productSize = $this->createProduct($subcategory, $brand, 2, 2, true, true);
         $size = $productSize->sizes()->first();
-        $color1 = $size->colors()->first();
-        $color2 = $this->createColor();
+        $colorSize = $size->colors()->first();
 
+        Livewire::test(AddCartItem::class, ['product' => $product])
+            ->call('addItem', $product);
 
-        $size->colors()->attach($color2->id, [
-            'quantity' => 7
-        ]);
+        Livewire::test(AddCartItemColor::class, ['product' => $productColor])
+            ->set('options', [
+                'color' => $color->name,
+                'colorId' => $color->id
+            ])
+            ->call('addItem', $productColor);
 
         Livewire::test(AddCartItemSize::class, ['product' => $productSize])
-            ->assertStatus(200)
-            ->assertSee(12)
-            ->set([
-                'size_id' => $size->id,
-                'color_id' => $color1->id,
+            ->set('options', [
+                'color' => $colorSize->name,
+                'colorId' => $colorSize->id,
+                'size' => $size->name,
+                'sizeId' => $size->id
             ])
-            ->assertSee(ucfirst($color1->name))
-            ->assertSee($color1->quantity)
-            ->set([
-                'size_id' => $size->id,
-                'color_id' => $color2->id,
+            ->call('addItem', $productSize);
+
+        $items = Cart::content();
+
+        Livewire::test(ShoppingCart::class)
+            ->assertSee($product->name)
+            ->assertSee($productColor->name)
+            ->assertSee($productSize->name)
+            ->call('delete', $items->first()->rowId)
+            ->assertDontSee($product->name);
+    }
+
+    /** @test */
+    public function it_can_destroy_the_shopping_cart()
+    {
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand);
+
+        $productColor = $this->createProduct($subcategory, $brand, 2, 2, false, true);
+        $color = $productColor->colors()->first();
+
+        $productSize = $this->createProduct($subcategory, $brand, 2, 2, true, true);
+        $size = $productSize->sizes()->first();
+        $colorSize = $size->colors()->first();
+
+        Livewire::test(AddCartItem::class, ['product' => $product])
+            ->call('addItem', $product);
+
+        Livewire::test(AddCartItemColor::class, ['product' => $productColor])
+            ->set('options', [
+                'color' => $color->name,
+                'colorId' => $color->id
             ])
-            ->assertSee(ucfirst($color2->name))
-            ->assertSee($color2->quantity);
+            ->call('addItem', $productColor);
+
+        Livewire::test(AddCartItemSize::class, ['product' => $productSize])
+            ->set('options', [
+                'color' => $colorSize->name,
+                'colorId' => $colorSize->id,
+                'size' => $size->name,
+                'sizeId' => $size->id
+            ])
+            ->call('addItem', $productSize);
+
+            Livewire::test(ShoppingCart::class)
+            ->assertSee($product->name)
+            ->assertSee($productColor->name)
+            ->assertSee($productSize->name)
+            ->call('destroy')
+            ->assertDontSee($product->name)
+            ->assertDontSee($productColor->name)
+            ->assertDontSee($productSize->name)
+            ->assertSee('TU CARRITO DE COMPRAS ESTÁ VACÍO');
     }
 }

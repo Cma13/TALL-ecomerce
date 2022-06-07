@@ -4,7 +4,10 @@ namespace Tests;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\City;
 use App\Models\Color;
+use App\Models\Department;
+use App\Models\District;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\Size;
@@ -75,6 +78,27 @@ trait CreateData
         ]);
 
         return $product;
+    }
+
+    public function createDepartment()
+    {
+        return Department::factory()->create();
+    }
+
+    public function createCity($name, $department)
+    {
+        return City::factory()->create([
+            'name' => $name,
+            'department_id' => $department->id
+        ]);
+    }
+
+    public function createDistrict($name, $city)
+    {
+        return District::factory()->create([
+            'name' => $name,
+            'city_id' => $city->id
+        ]);
     }
 
     public function createDefault()
