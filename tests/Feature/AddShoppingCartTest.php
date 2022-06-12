@@ -167,7 +167,7 @@ class AddShoppingCartTest extends TestCase
     }
 
     /** @test */
-    public function you_cannot_add_more_qty_than_the_one_in_stock_with_product_without_color_and_size()
+    public function you_cannot_add_more_qty_than_the_one_in_stock_with_product_without_color_or_size()
     {
         $category = $this->createCategory();
         $subcategory = $this->createSubcategory($category);
@@ -243,7 +243,6 @@ class AddShoppingCartTest extends TestCase
         $product = $this->createProduct($subcategory, $brand, 5);
 
         Livewire::test(AddCartItem::class, ['product' => $product])
-            ->assertStatus(200)
             ->assertSee($product->quantity);
     }
 
@@ -263,8 +262,7 @@ class AddShoppingCartTest extends TestCase
         ]);
 
         Livewire::test(AddCartItemColor::class, ['product' => $productColor])
-            ->assertStatus(200)
-            ->assertSee(12)
+            ->assertSee(12) //La suma de los productos de un color y otro
             ->set(['color_id' => ucfirst($color1->id)])
             ->assertSee(ucfirst($color1->name))
             ->assertSee($color1->quantity)

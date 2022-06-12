@@ -3,8 +3,12 @@
 namespace Tests\Feature;
 
 use App\Http\Livewire\AddCartItem;
+use App\Http\Livewire\AddCartItemColor;
+use App\Http\Livewire\AddCartItemSize;
 use App\Http\Livewire\CreateOrder;
 use App\Http\Livewire\PaymentOrder;
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -170,7 +174,7 @@ class CreateOrderTest extends TestCase
         $product = $this->createProduct($subcategory, $brand);
 
         $department = $this->createDepartment();
-        $city = $this->createCity('CiudadPrueba',$department);
+        $city = $this->createCity('CiudadPrueba', $department);
         $district = $this->createDistrict('DistritoPrueba', $city);
 
         Livewire::test(AddCartItem::class, ['product' => $product])
@@ -187,5 +191,226 @@ class CreateOrderTest extends TestCase
             ->assertDontSee($district->name)
             ->set('city_id', $city->id)
             ->assertSee($district->name);
+    }
+
+    /** @test */
+    public function you_can_access_to_your_orders_via_dropdown_menu()
+    {
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand);
+
+        Livewire::test(AddCartItem::class, ['product' => $product])
+            ->call('addItem', $product);
+
+        $this->get('orders/create')
+            ->assertStatus(200)
+            ->assertSee($product->name);
+
+        Livewire::test(CreateOrder::class)
+            ->set([
+                'contact' => 'Carlos',
+                'phone' => '633622744'
+            ])
+            ->call('create_order');
+
+        $order = Order::query()->where('user_id', $user->id)->first();
+
+        $this->get(route('orders.index'))
+            ->assertSee('Pedidos recientes')
+            ->assertSee(today()->format('d/m/Y'))
+            ->assertSee($order->total);
+    }
+
+    /** @test */
+    public function the_stock_changes_when_you_add_a_product_without_color_or_size_to_the_cart()
+    {
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand);
+
+        Livewire::test(AddCartItem::class, ['product' => $product])
+            ->assertSee($product->quantity)
+            ->call('addItem', $product)
+            ->assertSee($product->quantity - 1);
+    }
+
+    /** @test */
+    public function the_stock_changes_when_you_add_a_product_with_color_to_the_cart()
+    {
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category, true);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand, 5, 2, false, true);
+        $color = $product->colors()->first();
+        $color2 = $this->createColor();
+
+        $product->colors()->attach($color2->id, [
+            'quantity' => 7
+        ]);
+
+        Livewire::test(AddCartItemColor::class, ['product' => $product])
+            ->assertSee($product->stock)
+            ->set('options', [
+                'color' => $color->name,
+                'colorId' => $color->id
+            ])
+            ->assertSee($color->pivot->quantity)
+            ->call('addItem', $product)
+            ->assertSee($color->pivot->quantity - 1);
+    }
+
+    /** @test */
+    public function the_stock_changes_when_you_add_a_product_with_color_and_size_to_the_cart()
+    {
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category, true, true);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand, 2, 2, true, true);
+        $size = $product->sizes()->first();
+        $color = $size->colors()->first();
+        $color2 = $this->createColor();
+
+
+        $size->colors()->attach($color2->id, [
+            'quantity' => 7
+        ]);
+
+        Livewire::test(AddCartItemSize::class, ['product' => $product])
+            ->assertSee($product->stock)
+            ->set('options', [
+                'color' => $color->name,
+                'colorId' => $color->id,
+                'size' => $size->name,
+                'sizeId' => $size->id
+            ])
+            ->assertSee($size->colors->first()->pivot->quantity)
+            ->call('addItem', $product)
+            ->assertSee($size->colors->first()->pivot->quantity - 1);
+    }
+
+    /** @test */
+    public function the_stock_changes_in_the_database_when_an_order_is_created_with_a_product_without_color_or_size()
+    {
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand); //quantity = 5, de manera predeterminada en CreateData
+
+        Livewire::test(AddCartItem::class, ['product' => $product])
+            ->call('addItem', $product);
+
+        Livewire::test(CreateOrder::class)
+            ->set([
+                'contact' => 'Carlos',
+                'phone' => '633622744'
+            ])
+            ->call('create_order');
+
+        $productDb = Product::where('id', $product->id)->first();
+
+        $this->assertEquals($productDb->stock, 4);
+    }
+
+    /** @test */
+    public function the_stock_changes_in_the_database_when_an_order_is_created_with_a_product_with_color()
+    {
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category, true);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand, 5, 2, false, true); //quantity = 5, de manera predeterminada en CreateData
+        $color = $product->colors()->first();
+
+        Livewire::test(AddCartItemColor::class, ['product' => $product])
+            ->set('options', [
+                'color' => $color->name,
+                'colorId' => $color->id
+            ])
+            ->call('addItem', $product);
+
+        Livewire::test(CreateOrder::class)
+            ->set([
+                'contact' => 'Carlos',
+                'phone' => '633622744'
+            ])
+            ->call('create_order');
+
+        $productDb = Product::where('id', $product->id)->first();
+
+        $this->assertEquals($productDb->stock, 4);
+    }
+
+    /** @test */
+    public function the_stock_changes_in_the_database_when_an_order_is_created_with_a_product_with_color_and_size()
+    {
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category, true, true);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand, 5, 2, true, true); //quantity = 5, de manera predeterminada en CreateData
+        $size = $product->sizes()->first();
+        $color = $size->colors()->first();
+
+        Livewire::test(AddCartItemColor::class, ['product' => $product])
+            ->set('options', [
+                'color' => $color->name,
+                'colorId' => $color->id,
+                'size' => $size->name,
+                'sizeId' => $size->id
+            ])
+            ->call('addItem', $product);
+
+        Livewire::test(CreateOrder::class)
+            ->set([
+                'contact' => 'Carlos',
+                'phone' => '633622744'
+            ])
+            ->call('create_order');
+
+        $productDb = Product::where('id', $product->id)->first();
+
+        $this->assertEquals($productDb->stock, 4);
     }
 }
