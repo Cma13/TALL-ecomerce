@@ -13,6 +13,8 @@ use App\Models\Product;
 use App\Models\Size;
 use App\Models\Subcategory;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
 
 trait CreateData
 {
@@ -108,5 +110,25 @@ trait CreateData
         $brand = $this->createBrand($category);
         $this->createUser('Prueba');
         $product = $this->createProduct($subcategory, $brand);
+    }
+
+    public function createAdminUser()
+    {
+        $admin = Role::create(['name' => 'admin']);
+        $user = User::factory()->create()->assignRole($admin);
+
+        return $user;
+    }
+
+    public function createTestProduct()
+    {
+        $product = new Product([
+            'name' => 'Producto de Prueba',
+            'slug' => Str::slug('Producto de Prueba'),
+            'description' => 'descripcion producto de prueba',
+            'price' => 19.99
+        ]);
+
+        return $product;
     }
 }

@@ -12,7 +12,6 @@ class SizeProduct extends Component
 
     protected $rules = [
         'name' => 'required',
-
     ];
 
     protected $listeners = ['delete'];

@@ -53,8 +53,7 @@
                     })
                     .catch(error => {
                         console.error(error);
-                    });"
-                    x-ref="miEditor"></textarea>
+                    });" x-ref="miEditor"></textarea>
             </div>
             <x-jet-input-error for="description" />
         </div>
@@ -83,7 +82,8 @@
                 {{-- Cantidad --}}
                 <div>
                     <x-jet-label value="Cantidad" />
-                    <x-jet-input type="number" class="w-full" wire:model="quantity" placeholder="Ingrese una cantidad" />
+                    <x-jet-input type="number" class="w-full" wire:model="quantity"
+                        placeholder="Ingrese una cantidad" />
                     <x-jet-input-error for="quantity" />
                 </div>
             @else
