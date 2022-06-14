@@ -1,0 +1,8 @@
+ Tareas semana 1 e inicio de tareas semana 2 => commit: "dusk funcionando, trait CreateData, S2(1,2,3,4)", del 21 de Mayo
+ Tareas semana 2 terminada e inicio de tareas semana 3 => commits: "tareas s2 terminadas" y "s2 terminada, s3(1-5)", del 24 de Mayo y 1 de Junio, respectivamente
+ Tareas semana 3 finalizadas => commit: "s3 terminada + funciones creadas en CreateData", del 7 de Junio
+ Tareas semana 4 empezadas => commit: "s4 t1,2,3,4,5 hechos", del 13 de Junio
+ Tareas semana 4 finalizadas => commit: "s finalizada", del 14 de Junio
+ Tarea final 2 => commits: "columnas de subcategoria,marca,fecha de creacion,colores,tallas,stock creadas", 
+ "slider para paginacion hecho, mostrar/esconder columnas hecho y ordenar columnas hecho",
+ "productsfilter y queryfilter creados y funcionando + algunos filtros(cat,sub,brand,price,fromTo)" del 12, 14 y 18 de Mayo respectivamente

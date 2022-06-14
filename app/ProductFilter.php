@@ -48,8 +48,8 @@ class ProductFilter extends QueryFilter
             'brands' => 'array|exists:brands,id',
             'prices' => 'array|min:0|max:100',
             'dates' => 'array',
-            'colors' => 'filled',
-            'sizes' => 'filled',
+            'colors' => 'filled|exists:colors,id',
+            'sizes' => 'filled|exists:sizes,name',
         ];
     }
 

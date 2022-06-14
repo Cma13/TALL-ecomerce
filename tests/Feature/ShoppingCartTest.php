@@ -9,7 +9,11 @@ use App\Http\Livewire\ShoppingCart;
 use App\Http\Livewire\UpdateCartItem;
 use App\Http\Livewire\UpdateCartItemColor;
 use App\Http\Livewire\UpdateCartItemSize;
+use App\Listeners\MergeTheCart;
+use App\Models\User;
+use Gloudemans\Shoppingcart\Cart as ShoppingcartCart;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Livewire\Livewire;
@@ -224,7 +228,7 @@ class ShoppingCartTest extends TestCase
             ])
             ->call('addItem', $productSize);
 
-            Livewire::test(ShoppingCart::class)
+        Livewire::test(ShoppingCart::class)
             ->assertSee($product->name)
             ->assertSee($productColor->name)
             ->assertSee($productSize->name)
@@ -233,5 +237,51 @@ class ShoppingCartTest extends TestCase
             ->assertDontSee($productColor->name)
             ->assertDontSee($productSize->name)
             ->assertSee('TU CARRITO DE COMPRAS ESTÁ VACÍO');
+    }
+
+    /** @test */
+    public function the_shopping_cart_is_saved_in_the_database_when_the_user_logouts()
+    {
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category);
+        $brand = $this->createBrand($category);
+
+        $product = $this->createProduct($subcategory, $brand);
+        $product2 = $this->createProduct($subcategory, $brand);
+
+        Livewire::test(AddCartItem::class, ['product' => $product])
+            ->call('addItem', $product);
+
+        Livewire::test(AddCartItem::class, ['product' => $product2])
+            ->call('addItem', $product2);
+
+        $cartBefore = Cart::content();
+
+        $this->post(route('logout'));
+
+        $this->assertDatabaseCount('shoppingcart', 1);
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $listener = new MergeTheCart; //Creamos el listener
+        $event = new Login('web', $user, true); //Creamos el evento para que el listener lo pueda recibir
+        $this->actingAs($user);
+        $listener->handle($event); //Se ejecuta el evento
+
+        $cartAfter = Cart::content();
+
+        $this->assertEquals($cartBefore, $cartAfter);
     }
 }

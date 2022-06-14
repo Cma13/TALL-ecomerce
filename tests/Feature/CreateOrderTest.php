@@ -64,32 +64,6 @@ class CreateOrderTest extends TestCase
     }
 
     /** @test */
-    public function the_shopping_cart_is_saved_in_the_database_when_the_user_logouts()
-    {
-        $user = User::factory()->create();
-
-        $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
-        ]);
-
-        $this->assertAuthenticated();
-
-        $category = $this->createCategory();
-        $subcategory = $this->createSubcategory($category);
-        $brand = $this->createBrand($category);
-
-        $product = $this->createProduct($subcategory, $brand);
-
-        Livewire::test(AddCartItem::class, ['product' => $product])
-            ->call('addItem', $product);
-
-        $this->post(route('logout'));
-
-        $this->assertDatabaseCount('shoppingcart', 1);
-    }
-
-    /** @test */
     public function it_shows_the_dropdown_when_selecting_home_delivery()
     {
         $user = User::factory()->create();
