@@ -5,6 +5,7 @@ use App\Models\Product;
 use App\Models\Size;
 use Gloudemans\Shoppingcart\Facades\Cart;
 
+//Helpers para ayudar a gestionar las cantidades en el carrito de compra y el stock
 function quantity($productId, $colorId = null, $sizeId = null)
 {
     $product = Product::find($productId);

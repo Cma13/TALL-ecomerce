@@ -26,7 +26,7 @@ text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full"
                             <div class="flex">
                                 <p>Cant: {{ $item->qty }}&nbsp;</p>
                                 @isset ($item->options['color'])
-                                    <p>- Color: {{ __(ucfirst($item->options['color'])) }}&nbsp;</p>
+                                    <p>- Color: {{ __(ucfirst($item->options['color'])) }} &nbsp;</p>
                                 @endisset
                                 @isset($item->options['size'])
                                     <p> - {{ $item->options['size'] }}</p>

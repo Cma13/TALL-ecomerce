@@ -18,7 +18,7 @@
             @livewire('search')
         </div>
 
-        <div class="mx-6 relative hidden md:block">
+        <div class="mx-6 relative hidden md:block" dusk="userButton">
             @auth
                 <x-jet-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -165,7 +165,7 @@
                     <span class="flex justify-center w-9">
                         <i class="fas fa-fingerprint"></i>
                     </span>
-                    Registrar
+                    Registrarse
                 </a>
             @endauth
         </div>
