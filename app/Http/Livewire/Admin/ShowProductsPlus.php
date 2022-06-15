@@ -8,7 +8,7 @@ use App\Models\Color;
 use App\Models\Product;
 use App\Models\Size;
 use App\Models\Subcategory;
-use App\ProductFilter;
+use App\Filters\ProductFilter;
 use Illuminate\Support\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -31,6 +31,7 @@ class ShowProductsPlus extends Component
     public $toFilter;
     public $selectedColors = [];
     public $selectedSizes = [];
+    public $moreThan = false;
 
     public function updatedSearch()
     {
@@ -121,7 +122,8 @@ class ShowProductsPlus extends Component
                 'prices' => [$this->minPriceFilter, $this->maxPriceFilter],
                 'dates' => [$this->fromFilter, $this->toFilter],
                 'colors' => $this->selectedColors,
-                'sizes' => $this->selectedSizes
+                'sizes' => $this->selectedSizes,
+                'moreThan' => $this->moreThan
             ])
             ->paginate($this->pages);
 

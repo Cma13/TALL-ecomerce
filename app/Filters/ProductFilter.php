@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Filters;
 
 use App\Models\Product;
 use App\Models\Size;
@@ -50,6 +50,7 @@ class ProductFilter extends QueryFilter
             'dates' => 'array',
             'colors' => 'filled|exists:colors,id',
             'sizes' => 'filled|exists:sizes,name',
+            'moreThan' => 'boolean'
         ];
     }
 
@@ -122,5 +123,12 @@ class ProductFilter extends QueryFilter
         return $query->whereHas('sizes', function ($query) use ($selectedSizes) {
             $query->where('sizes.name', $selectedSizes);
         });
+    }
+
+    public function moreThan($query, $moreThan)
+    {
+        if($moreThan == true) {
+            return $query->where('price', '>', 90);
+        }
     }
 }

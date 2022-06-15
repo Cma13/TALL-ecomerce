@@ -111,6 +111,12 @@
                                 </div>
                             </div>
                         </div>
+                        <div>
+                            <x-jet-label value="Más de 90€" />
+                            <x-jet-input type="checkbox" wire:model="moreThan" wire:click="$set('moreThan', {{ !$moreThan }})" />
+                            <label class="w-full">Más de 90€</label>
+                            <br>
+                        </div>
                     </div>
                 </div>
             </div>
