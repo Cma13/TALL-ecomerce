@@ -18,7 +18,7 @@ class ShowProductsPlus extends Component
     use WithPagination;
 
     public $search, $pages = 9;
-    public $columns = ['Nombre', 'Categoría', 'Subcategoría', 'Marca', 'Fecha de creación', 'Estado', 'Colores', 'Tallas', 'Stock', 'Precio'];
+    public $columns = ['Nombre', 'Categoría', 'Subcategoría', 'Marca', 'Fecha de creación', 'Estado', 'Colores', 'Tallas', 'Stock', 'Precio', 'Vendidos', 'Sin Confirmar'];
     public $selectedColumns = [];
     public $sortColumn = 'products.name';
     public $sortDirection = 'asc';

@@ -248,6 +248,16 @@
                                         {{ $product->price }}&euro;
                                     </td>
                                 @endif
+                                @if ($this->showColumn('Vendidos'))
+                                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                        {{ $product->sales }}
+                                    </td>
+                                @endif
+                                @if ($this->showColumn('Sin Confirmar'))
+                                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                        {{ $product->unconfirmed }}
+                                    </td>
+                                @endif
                                 <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                     <a href="{{ route('admin.products.edit', $product) }}"
                                         class="text-indigo-600 hover:text-indigo-900">Editar</a>
