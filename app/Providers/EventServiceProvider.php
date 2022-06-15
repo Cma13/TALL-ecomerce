@@ -29,6 +29,9 @@ class EventServiceProvider extends ServiceProvider
         Logout::class => [
             "App\Listeners\MergeTheCartLogout"
         ],
+        Logout::class => [
+            "App\Listeners\MailOrder"
+        ],
     ];
 
     /**
