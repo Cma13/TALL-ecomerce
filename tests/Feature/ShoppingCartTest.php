@@ -239,7 +239,7 @@ class ShoppingCartTest extends TestCase
             ->assertSee('TU CARRITO DE COMPRAS ESTÁ VACÍO');
     }
 
-    //Aqui empieza el ejercicio 3
+    //Aqui empieza el ejercicio 2
     /** @test */
     public function the_shopping_cart_is_saved_in_the_database_when_the_user_logouts()
     {
