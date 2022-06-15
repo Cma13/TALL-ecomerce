@@ -239,6 +239,7 @@ class ShoppingCartTest extends TestCase
             ->assertSee('TU CARRITO DE COMPRAS ESTÁ VACÍO');
     }
 
+    //Aqui empieza el ejercicio 3
     /** @test */
     public function the_shopping_cart_is_saved_in_the_database_when_the_user_logouts()
     {
@@ -297,4 +298,5 @@ class ShoppingCartTest extends TestCase
         $this->assertEquals($cartContentBefore->last()->qty, $cartContentAfter->last()->qty);
         $this->assertEquals($cartContentBefore->last()->price, $cartContentAfter->last()->price);
     }
+    //Aqui acaba
 }
