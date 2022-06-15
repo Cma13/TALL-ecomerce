@@ -265,6 +265,11 @@ class ShoppingCartTest extends TestCase
             ->call('addItem', $product2);
 
         $cartBefore = Cart::content();
+        $cartContentBefore = collect([]);
+
+        $cartBefore->each(function ($item) use ($cartContentBefore) {
+            $cartContentBefore->push($item);
+        });
 
         $this->post(route('logout'));
 
@@ -281,7 +286,15 @@ class ShoppingCartTest extends TestCase
         $listener->handle($event); //Se ejecuta el evento
 
         $cartAfter = Cart::content();
+        $cartContentAfter = collect([]);
 
-        $this->assertEquals($cartBefore, $cartAfter);
+        $cartAfter->each(function ($item) use ($cartContentAfter) {
+            $cartContentAfter->push($item);
+        });
+
+        $this->assertEquals($cartContentBefore->first()->qty, $cartContentAfter->first()->qty);
+        $this->assertEquals($cartContentBefore->first()->price, $cartContentAfter->first()->price);
+        $this->assertEquals($cartContentBefore->last()->qty, $cartContentAfter->last()->qty);
+        $this->assertEquals($cartContentBefore->last()->price, $cartContentAfter->last()->price);
     }
 }
